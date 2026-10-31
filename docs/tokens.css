@@ -1,0 +1,73 @@
+/* Body Clock Kit design tokens. Warm neutrals, orange key color.
+   Fonts: Geist (UI) and Geist Mono (times, labels). */
+:root {
+  --bg: #F2F1ED;
+  --card: #FAFAF7;
+  --raised: #ECEAE3;
+  --ink: #26251E;
+  --muted: #6B6A60;
+  --line: #E2E0D8;
+  --line2: #BDBAAE;
+  --accent: #F54E00;
+  --accent-ink: #1A0A00;
+  --accent-soft: #FDE6DB;
+  --accent-text: #B93A00;
+  --dot: #8A887C;
+
+  /* route hero and ticket */
+  --hero: #26251E;
+  --hero-line: #4A483E;
+  --hero-text: #F2F1ED;
+  --hero-muted: #B9B6A8;
+  --hero-dash: #8A887C;
+  --ticket: #FAFAF7;
+  --tbd: #FAFAF7;
+
+  /* categories (dot only, never a card fill) */
+  --c-sleep: #7A6BB8;
+  --c-supp: #C99A00;
+  --c-fluid: #3F8FB5;
+  --c-light: #C9547A;
+  --c-comfort: #6F9B73;
+}
+
+:root[data-theme="dark"] {
+  --bg: #000000;
+  --card: #0A0A0A;
+  --raised: #111111;
+  --ink: #EDEDED;
+  --muted: #A1A1A1;
+  --line: #262626;
+  --line2: #404040;
+  --accent: #FF6B2C;
+  --accent-ink: #000000;
+  --accent-soft: #2A1408;
+  --accent-text: #FF6B2C;
+  --dot: #6B6B6B;
+
+  --hero: #0A0A0A;
+  --hero-line: #262626;
+  --hero-text: #EDEDED;
+  --hero-muted: #A1A1A1;
+  --hero-dash: #6B6B6B;
+  --ticket: #141414;
+  --tbd: #2E2E2E;
+
+  --c-sleep: #A99AE6;
+  --c-supp: #F2C94C;
+  --c-fluid: #6BB6DA;
+  --c-light: #E88AA8;
+  --c-comfort: #8FC794;
+}
+
+/* system default: follow the OS unless data-theme is set */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --card: #0A0A0A; --raised: #111111; --ink: #EDEDED; --muted: #A1A1A1;
+    --line: #262626; --line2: #404040; --accent: #FF6B2C; --accent-ink: #000000;
+    --accent-soft: #2A1408; --accent-text: #FF6B2C; --dot: #6B6B6B;
+    --hero: #0A0A0A; --hero-line: #262626; --hero-text: #EDEDED; --hero-muted: #A1A1A1;
+    --hero-dash: #6B6B6B; --ticket: #141414; --tbd: #2E2E2E;
+    --c-sleep: #A99AE6; --c-supp: #F2C94C; --c-fluid: #6BB6DA; --c-light: #E88AA8; --c-comfort: #8FC794;
+  }
+}

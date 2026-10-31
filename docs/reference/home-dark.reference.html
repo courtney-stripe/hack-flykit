@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home, dark</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+body{margin:0}
+:root{--bg:#000000;--card:#0A0A0A;--raised:#111111;--ink:#EDEDED;--muted:#A1A1A1;--line:#262626;--line2:#404040;--accent:#FF6B2C;--accent-ink:#000000;--accent-soft:#2A1408;--accent-text:#FF6B2C;--dot:#6B6B6B;--hero:#0A0A0A;--hero-line:#262626;--hero-text:#EDEDED;--hero-muted:#A1A1A1;--hero-dash:#6B6B6B;--ticket:#141414;--tbd:#2E2E2E;--c-sleep:#A99AE6;--c-supp:#F2C94C;--c-fluid:#6BB6DA;--c-light:#E88AA8;--c-comfort:#8FC794}
+.app{width:390px;height:1090px;box-sizing:border-box;background:var(--bg);color:var(--ink);font-family:'Geist',system-ui,sans-serif;font-size:15px;line-height:1.4;padding:20px 16px 24px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.mono{font-family:'Geist Mono',ui-monospace,monospace}
+.top{display:flex;align-items:center;justify-content:space-between;height:44px}
+.top h1{margin:0;font-size:20px;font-weight:600;letter-spacing:-.02em}
+.iconbtn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;padding:0}
+.hero{background:var(--hero);border:1px solid var(--hero-line);border-radius:20px;padding:16px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.arcwrap{position:relative;width:330px;height:112px}
+.arcwrap svg.arcsvg{position:absolute;left:0;top:0}
+.dash{stroke:var(--hero-dash);stroke-width:1.5;stroke-dasharray:2 5;stroke-linecap:round;fill:none}
+.trail{stroke:var(--accent);stroke-width:2;stroke-linecap:round;fill:none;stroke-dasharray:100;stroke-dashoffset:100;animation:trail 2.6s cubic-bezier(.45,.05,.25,1) .3s forwards}
+.c1{fill:var(--hero-text)}
+.c2{fill:var(--hero);stroke:var(--hero-text);stroke-width:2}
+.plane{position:absolute;left:0;top:0;width:24px;height:24px;offset-path:path("M14 100 Q165 -20 316 100");offset-rotate:auto 45deg;offset-distance:0%;animation:fly 2.6s cubic-bezier(.45,.05,.25,1) .3s forwards}
+.plane svg{display:block;fill:var(--accent)}
+@keyframes fly{to{offset-distance:72%}}
+@keyframes trail{to{stroke-dashoffset:28}}
+@media (prefers-reduced-motion:reduce){.plane{animation:none;offset-distance:72%}.trail{animation:none;stroke-dashoffset:28}.ncard{transition:none!important}}
+.ticket{background:var(--ticket);border:1px solid var(--tbd);border-radius:16px;color:var(--ink);padding:18px 16px 0;position:relative}
+.route{display:flex;align-items:center;justify-content:space-between}
+.code{font-size:48px;font-weight:600;letter-spacing:-.04em;line-height:1}
+.arrow{stroke:var(--accent)}
+.cities{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-top:6px}
+.lbl{font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.val{font-size:15px;font-weight:500;margin-top:3px}
+.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px;margin-top:16px}
+.perf{position:relative;height:20px;margin:16px -16px 0;display:flex;align-items:center}
+.perf hr{flex:1;border:0;border-top:1.5px dashed var(--line2);margin:0 14px}
+.notch{position:absolute;top:0;width:20px;height:20px;border-radius:50%;background:var(--hero)}
+.notch.l{left:-10px}.notch.r{right:-10px}
+.stub{display:flex;justify-content:space-between;align-items:flex-end;padding:8px 0 16px;gap:12px}
+.stubgrid{display:grid;grid-template-columns:auto auto;gap:10px 22px}
+.stubgrid .big{font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1.05;margin-top:3px}
+.meter{display:flex;align-items:flex-end;gap:5px;height:52px}
+.meter i{display:block;width:12px;border-radius:3px;background:var(--line)}
+.meter i.on{background:var(--accent)}
+.meterwrap{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.nh{display:flex;justify-content:space-between;align-items:baseline;padding:0 2px}
+.nh h2{margin:0;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.nh span{color:var(--muted);font-size:12px}
+.deck{position:relative;height:116px;perspective:800px}
+.ncard{position:absolute;left:0;right:0;top:0;height:92px;box-sizing:border-box;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card);color:var(--ink);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;font:inherit;cursor:pointer;transform-origin:50% 0;box-shadow:0 8px 20px rgba(0,0,0,.14);transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .3s ease,filter .3s ease}
+.cdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--cat);margin-right:6px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:0 2px;color:var(--muted);font-size:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.ncard:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.ncard .t{display:block;font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.ncard .h{display:block;font-size:20px;font-weight:600;letter-spacing:-.01em;margin-top:2px}
+.ncard .d{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.ncard .ck{flex:none;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line2);color:var(--ink);display:grid;place-items:center}
+.undo{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:32px;padding:0 2px;font-size:13px;color:var(--muted)}
+.undo button{border:1px solid var(--line2);background:transparent;color:var(--ink);border-radius:999px;height:32px;padding:0 14px;font:inherit;font-size:13px;font-weight:500;cursor:pointer}
+.caught{display:flex;align-items:center;height:92px;padding:0 16px;border:1px dashed var(--line2);border-radius:16px;color:var(--muted)}
+.sh{display:flex;justify-content:space-between;align-items:baseline;padding:0 2px}
+.sh h2{margin:0;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.sh span{color:var(--muted);font-size:13px}
+.day{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.day header{display:flex;justify-content:space-between;align-items:baseline;padding:11px 14px;background:var(--raised);border-bottom:1px solid var(--line)}
+.day h3{margin:0;font-size:14px;font-weight:600}
+.day header span{color:var(--muted);font-size:12px}
+.row{position:relative;display:grid;grid-template-columns:22px 62px minmax(0,1fr);gap:12px;padding:12px 14px;border-top:1px solid var(--line);align-items:start;cursor:pointer}
+.row.first{border-top:0}
+.row input{position:absolute;opacity:0;width:22px;height:22px;margin:0}
+.box{width:22px;height:22px;border:1.5px solid var(--line2);border-radius:6px;display:grid;place-items:center}
+.box svg{width:13px;height:13px;opacity:0;stroke:var(--accent-ink)}
+.row input:checked+.box{background:var(--accent);border-color:var(--accent)}
+.row input:checked+.box svg{opacity:1}
+.row input:focus-visible+.box{outline:2px solid var(--accent);outline-offset:2px}
+.tm{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;font-variant-numeric:tabular-nums;padding-top:3px}
+.ttl{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--dot);flex:none}
+.dot.key{background:var(--accent)}
+.bd p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.row,.row .box,.row .dot{transition:opacity .6s ease,background-color .6s ease,border-color .6s ease,color .6s ease}
+.row.done .ttl{text-decoration:line-through}
+.row.settled{opacity:.5}
+.row.settled .ttl{color:var(--muted)}
+.row.settled .dot{background:var(--dot)!important}
+.row.settled input:checked+.box{background:var(--line2);border-color:var(--line2)}
+.row.settled .box svg{stroke:var(--card)}
+</style>
+</helmet>
+<div class="app">
+  <div class="top">
+    <h1>Body Clock Kit</h1>
+    <button class="iconbtn" aria-label="Switch theme"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></button>
+  </div>
+
+  <section class="hero" aria-label="Trip">
+    <div class="arcwrap">
+      <svg class="arcsvg" width="330" height="112" viewBox="0 0 330 112" fill="none" aria-hidden="true">
+        <path class="dash" d="M14 100 Q165 -20 316 100"></path>
+        <path class="trail" pathLength="100" d="M14 100 Q165 -20 316 100"></path>
+        <circle class="c1" cx="14" cy="100" r="5"></circle>
+        <circle class="c2" cx="316" cy="100" r="5"></circle>
+      </svg>
+      <span class="plane" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path></svg></span>
+    </div>
+
+    <div class="ticket">
+      <div class="route">
+        <span class="code">DEN</span>
+        <svg class="arrow" width="28" height="14" viewBox="0 0 28 14" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 7h25M20 1l6 6-6 6"></path></svg>
+        <span class="code">AMS</span>
+      </div>
+      <div class="cities"><span>Denver</span><span>Amsterdam</span></div>
+      <div class="fields">
+        <div><div class="lbl">Flights</div><div class="val mono">FI670 · FI500</div></div>
+        <div><div class="lbl">Date</div><div class="val">Sun, Nov 1</div></div>
+        <div><div class="lbl">Door to door</div><div class="val">12 h 15 m</div></div>
+        <div><div class="lbl">Departs</div><div class="val">3:40 PM</div></div>
+        <div><div class="lbl">Layover</div><div class="val">KEF 1 h 35</div></div>
+        <div><div class="lbl">Lands</div><div class="val">11:55 AM</div></div>
+      </div>
+      <div class="perf" aria-hidden="true"><i class="notch l"></i><hr><i class="notch r"></i></div>
+      <div class="stub">
+        <div class="stubgrid">
+          <div><div class="lbl">Clock shift</div><div class="big">+8 h</div></div>
+          <div><div class="lbl">Direction</div><div class="big">East</div></div>
+          <div><div class="lbl">Denver now</div><div class="val mono">2:20 PM</div></div>
+          <div><div class="lbl">Amsterdam now</div><div class="val mono">10:20 PM</div></div>
+        </div>
+        <div class="meterwrap">
+          <div class="meter" aria-hidden="true"><i class="on" style="height:22px"></i><i style="height:30px"></i><i style="height:38px"></i><i style="height:46px"></i><i style="height:52px"></i></div>
+          <div class="lbl">About 5 days</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="nh"><h2>Next up</h2><span class="mono">Tap the top card when done</span></div>
+  <div class="deck" aria-live="polite">
+    <sc-if value="{{ allDone }}" hint-placeholder-val="{{ false }}">
+      <div class="caught">All caught up. Nothing else on the schedule.</div>
+    </sc-if>
+    <sc-for list="{{ stack }}" as="n" hint-placeholder-count="3">
+      <button class="ncard" type="button" style="{{ n.style }}" onClick="{{ n.tap }}" aria-label="Mark done">
+        <span><span class="t"><i class="cdot"></i>{{ n.cat }} · {{ n.time }} · Denver</span><span class="h">{{ n.title }}</span><span class="d">{{ n.desc }}</span></span>
+        <span class="ck"><svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 7.5l3 3 6-7"></path></svg></span>
+      </button>
+    </sc-for>
+  </div>
+  <div class="undo">
+    <sc-if value="{{ hasLast }}" hint-placeholder-val="{{ false }}">
+      <span>{{ lastTitle }} marked done</span>
+      <button type="button" onClick="{{ undo }}">Undo</button>
+    </sc-if>
+  </div>
+
+  <div class="sh"><h2>Schedule</h2><span>{{ doneText }}</span></div>
+  <div class="legend" aria-label="Categories"><span><i style="background:var(--c-sleep)"></i>Sleep</span><span><i style="background:var(--c-supp)"></i>Supplement</span><span><i style="background:var(--c-fluid)"></i>Fluids</span><span><i style="background:var(--c-light)"></i>Light</span><span><i style="background:var(--c-comfort)"></i>Comfort</span></div>
+
+  <section class="day">
+    <header><h3>Before you fly</h3><span>Sun, Nov 1 · Denver</span></header>
+    <sc-for list="{{ pre }}" as="r" hint-placeholder-count="4">
+      <label class="{{ r.cls }}"><input type="checkbox" checked="{{ r.checked }}" onChange="{{ r.toggle }}"><span class="box"><svg viewBox="0 0 14 14" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 7.5l3 3 6-7"></path></svg></span><span class="tm">{{ r.time }}</span><span class="bd"><span class="ttl"><i class="dot" style="{{ r.dotStyle }}"></i>{{ r.title }}</span><p>{{ r.desc }}</p></span></label>
+    </sc-for>
+  </section>
+  <section class="day">
+    <header><h3>In the air</h3><span>Sun, Nov 1 · Denver</span></header>
+    <sc-for list="{{ air }}" as="r" hint-placeholder-count="1">
+      <label class="{{ r.cls }}"><input type="checkbox" checked="{{ r.checked }}" onChange="{{ r.toggle }}"><span class="box"><svg viewBox="0 0 14 14" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 7.5l3 3 6-7"></path></svg></span><span class="tm">{{ r.time }}</span><span class="bd"><span class="ttl"><i class="dot" style="{{ r.dotStyle }}"></i>{{ r.title }}</span><p>{{ r.desc }}</p></span></label>
+    </sc-for>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1090}}'>
+class Component extends DCLogic {
+renderVals() {
+  const CATS = { sleep: 'Sleep', supp: 'Supplement', fluid: 'Fluids', light: 'Light', comfort: 'Comfort' };
+  const evs = [
+    { id: 'e1', g: 'pre', time: '1:40 PM', title: 'Vitamin C', desc: 'Vitamin C, 2 capsules (1,000 mg)', c: 'supp' },
+    { id: 'e2', g: 'pre', time: '2:00 PM', title: 'Fish oil with your meal', desc: '2 softgels, with food', c: 'supp' },
+    { id: 'e3', g: 'pre', time: '2:25 PM', title: 'Compression socks', desc: 'Put them on before boarding', c: 'comfort' },
+    { id: 'e4', g: 'pre', time: '2:40 PM', title: 'Water + electrolytes', desc: 'Keep sipping in the air', c: 'fluid' },
+    { id: 'e5', g: 'air', time: '5:10 PM', title: 'Melatonin + magnesium', desc: 'Settle in to sleep. 12:10 AM in Iceland.', c: 'sleep' }
+  ];
+  const done = this.state.done || { e1: true, e2: true };
+  const last = this.state.last || null;
+  const fresh = this.state.fresh || {};
+  const settle = (id) => setTimeout(() => { const f = Object.assign({}, this.state.fresh || {}); delete f[id]; this.setState({ fresh: f }); }, 3000);
+  let rank = 0;
+  const stack = evs.map((ev) => {
+    const isDone = !!done[ev.id];
+    const r = isDone ? -1 : rank++;
+    let style = 'transform: translateY(20px) scale(0.9); opacity: 0; z-index: 0; pointer-events: none';
+    if (isDone) style = 'transform: translateY(-22px) scale(1.03); opacity: 0; z-index: 0; pointer-events: none';
+    else if (r === 0) style = 'transform: translateY(0) scale(1); opacity: 1; z-index: 30';
+    else if (r === 1) style = 'transform: translateY(11px) scale(0.95); opacity: 1; z-index: 20; filter: brightness(0.9)';
+    else if (r === 2) style = 'transform: translateY(21px) scale(0.9); opacity: 1; z-index: 10; filter: brightness(0.8)';
+    return {
+      time: ev.time, title: ev.title, desc: ev.desc, cat: CATS[ev.c], style: style + '; --cat: var(--c-' + ev.c + ')',
+      tap: r === 0 ? () => { this.setState({ done: Object.assign({}, done, { [ev.id]: true }), last: ev.id, fresh: Object.assign({}, fresh, { [ev.id]: true }) }); settle(ev.id); } : () => {}
+    };
+  });
+  const row = (ev, i) => ({
+    time: ev.time, title: ev.title, desc: ev.desc,
+    cls: 'row' + (i === 0 ? ' first' : '') + (done[ev.id] ? (fresh[ev.id] ? ' done fresh' : ' done settled') : ''),
+    dotStyle: 'background: var(--c-' + ev.c + ')',
+    checked: !!done[ev.id],
+    toggle: () => {
+      const d = Object.assign({}, done);
+      const f = Object.assign({}, fresh);
+      if (d[ev.id]) { delete d[ev.id]; delete f[ev.id]; } else { d[ev.id] = true; f[ev.id] = true; settle(ev.id); }
+      this.setState({ done: d, fresh: f, last: null });
+    }
+  });
+  const count = evs.filter((e) => done[e.id]).length;
+  const lastEv = evs.filter((e) => e.id === last)[0];
+  return {
+    stack: stack,
+    pre: evs.filter((e) => e.g === 'pre').map(row),
+    air: evs.filter((e) => e.g === 'air').map(row),
+    allDone: count === evs.length,
+    doneText: count + ' of ' + evs.length + ' done',
+    hasLast: !!lastEv,
+    lastTitle: lastEv ? lastEv.title : '',
+    undo: () => {
+      const d = Object.assign({}, done);
+      const f = Object.assign({}, fresh);
+      if (last) { delete d[last]; delete f[last]; }
+      this.setState({ done: d, fresh: f, last: null });
+    }
+  };
+}
+}
+</script>
+</body>
+</html>

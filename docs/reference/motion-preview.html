@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Motion Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2F1ED;--card:#FAFAF7;--ink:#26251E;--muted:#6B6A60;--line:#E2E0D8;--accent:#F54E00;--accent-ink:#1A0A00;--hero:#26251E;--hero-text:#F2F1ED;--hero-muted:#B9B6A8;--hero-dash:#8A887C;--dot:#8A887C;--c-sleep:#7A6BB8;--c-supp:#C99A00;--c-fluid:#3F8FB5;--c-light:#C9547A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#0A0A0A;--ink:#EDEDED;--muted:#A1A1A1;--line:#262626;--accent:#FF6B2C;--accent-ink:#000;--hero:#0A0A0A;--hero-text:#EDEDED;--hero-muted:#A1A1A1;--hero-dash:#6B6B6B;--dot:#6B6B6B;--c-sleep:#A99AE6;--c-supp:#F2C94C;--c-fluid:#6BB6DA;--c-light:#E88AA8}}
+:root[data-theme="dark"]{--bg:#000;--card:#0A0A0A;--ink:#EDEDED;--muted:#A1A1A1;--line:#262626;--accent:#FF6B2C;--accent-ink:#000;--hero:#0A0A0A;--hero-text:#EDEDED;--hero-muted:#A1A1A1;--hero-dash:#6B6B6B;--dot:#6B6B6B;--c-sleep:#A99AE6;--c-supp:#F2C94C;--c-fluid:#6BB6DA;--c-light:#E88AA8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 Geist,system-ui,sans-serif}
+.wrap{max-width:420px;margin:0 auto;padding:16px}
+.bar{display:flex;gap:8px;margin-bottom:12px}
+button{font:500 14px Geist,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px 14px;cursor:pointer;transition:transform .08s}
+button:active{transform:scale(.98)}
+button.p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.hero{background:var(--hero);color:var(--hero-text);border-radius:20px;padding:18px 16px 14px;opacity:0}
+.hero svg.map{width:330px;height:auto;display:block;overflow:visible}
+.arc{fill:none;stroke:var(--hero-dash);stroke-width:2;stroke-dasharray:2 6;stroke-linecap:round}
+.trail{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100}
+.plane{position:absolute;left:0;top:0;width:16px;height:16px;offset-anchor:50% 50%;offset-path:path("M14 100 Q165 -20 316 100");offset-rotate:auto 90deg;offset-distance:0%;color:var(--accent);opacity:0}
+.stage{position:relative;width:330px;margin:0 auto}
+.cities{width:330px;margin:0 auto;display:flex;justify-content:space-between;font:500 12px 'Geist Mono',monospace;color:var(--hero-muted)}
+.ticket{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px;opacity:0}
+.ticket b{font:500 22px 'Geist Mono',monospace}
+.meter{display:flex;gap:4px;margin-top:10px}.meter i{flex:1;height:5px;border-radius:3px;background:var(--line)}.meter i.on{background:var(--accent)}
+.deck{position:relative;height:150px;margin-top:16px}
+.ncard{position:absolute;left:0;right:0;top:0;height:84px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;opacity:0;cursor:pointer;transition:transform .26s cubic-bezier(.2,.8,.2,1),opacity .22s,filter .26s}
+.ncard small,.row small{font:400 12px 'Geist Mono',monospace;color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px}
+.grp{margin-top:6px}.grp h4{margin:14px 0 6px;font:500 12px 'Geist Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);opacity:0;transition:opacity .4s}
+.row .t{flex:1}
+.cb{width:22px;height:22px;border-radius:7px;border:1.5px solid var(--dot);transition:background .4s,border-color .4s}
+.row.fresh .cb{background:var(--accent);border-color:var(--accent)}
+.row.settled{opacity:.5!important}.row.settled .cb{background:var(--dot);border-color:var(--dot)}
+.row.settled .dot{background:var(--dot)!important}
+.go .hero{animation:fade .2s ease-out forwards}
+.go .trail{animation:draw 3.2s .2s cubic-bezier(.45,.05,.3,1) forwards}
+.go .plane{animation:fly 3.2s .2s cubic-bezier(.45,.05,.3,1) forwards}
+.go .ticket{animation:rise .35s .12s ease-out forwards}
+.go .row{animation:rise6 .25s ease-out forwards}
+@keyframes fade{to{opacity:1}}
+@keyframes draw{to{stroke-dashoffset:28}}
+@keyframes fly{0%{offset-distance:0%;opacity:1}100%{offset-distance:72%;opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes rise6{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.hero,.ticket,.row,.ncard{opacity:1!important;animation:none!important;transition:none!important}.trail{stroke-dashoffset:28!important}.plane{offset-distance:72%!important;opacity:1!important}}
+.hint{font-size:12px;color:var(--muted);margin:10px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="bar"><button class="p" id="replay">Replay load</button><button id="theme">Dark / light</button></div>
+  <div class="hero">
+    <div class="stage">
+      <svg class="map" viewBox="0 0 330 120" aria-hidden="true">
+        <path class="arc" d="M14 100 Q165 -20 316 100"/>
+        <path class="trail" pathLength="100" d="M14 100 Q165 -20 316 100"/>
+      </svg>
+      <svg class="plane" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>
+    </div>
+    <div class="cities"><span>DEN 15:40</span><span>AMS 11:55 +1</span></div>
+  </div>
+  <div class="ticket"><small style="font:400 12px 'Geist Mono',monospace;color:var(--muted)">SHIFT</small><br><b>+8 h</b> <span style="color:var(--muted)">East · 5 days</span>
+    <div class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+  <div class="deck" id="deck"></div>
+  <div class="grp" id="rows"></div>
+  <p class="hint">Tap the top Next up card: it slides away, the deck promotes, its row turns orange, then dims after 3 s. Reduced-motion setting shows final states.</p>
+</div>
+<script>
+var items=[
+ {t:'13:40',n:'Vitamin C',c:'--c-supp'},
+ {t:'14:00',n:'Fish oil',c:'--c-supp'},
+ {t:'14:25',n:'Compression socks',c:'--c-comfort'},
+ {t:'14:40',n:'Water + electrolytes',c:'--c-fluid'},
+ {t:'21:30',n:'Amber glasses',c:'--c-sleep'},
+ {t:'22:30',n:'Melatonin + 2 magnesium',c:'--c-sleep'}
+];
+var s=getComputedStyle(document.documentElement);
+function col(v){return 'var('+v+')'}
+var done=[],app=document.getElementById('app'),deck=document.getElementById('deck'),rows=document.getElementById('rows');
+var ranks=[{y:0,s:1,b:1},{y:11,s:.95,b:.9},{y:21,s:.9,b:.8}];
+function build(){
+  done=[];deck.innerHTML='';rows.innerHTML='<h4>Flight day</h4>';
+  items.forEach(function(it,i){
+    var r=document.createElement('div');r.className='row';r.id='r'+i;r.style.animationDelay=(.55+Math.min(i,5)*.04)+'s';
+    r.innerHTML='<span class="dot" style="background:'+col(it.c)+'"></span><div class="t">'+it.n+'<br><small>'+it.t+'</small></div><div class="cb"></div>';
+    rows.appendChild(r);
+  });
+  for(var k=2;k>=0;k--){mkcard(k)}
+  layout();
+}
+function mkcard(i){
+  var it=items[i];if(!it)return;
+  var c=document.createElement('div');c.className='ncard';c.id='c'+i;
+  c.innerHTML='<small>NEXT UP · '+it.t+'</small><div style="margin-top:6px;font-weight:500"><span class="dot" style="background:'+col(it.c)+'"></span>'+it.n+'</div>';
+  c.onclick=function(){tap(i)};deck.appendChild(c);
+}
+function layout(){
+  var pending=items.map(function(_,i){return i}).filter(function(i){return done.indexOf(i)<0});
+  items.forEach(function(_,i){
+    var c=document.getElementById('c'+i);if(!c)return;
+    var rk=pending.indexOf(i);
+    if(rk<0){c.style.transform='translateY(-22px)';c.style.opacity=0;c.style.pointerEvents='none';return}
+    if(rk>2){var q=ranks[2];c.style.transform='translateY('+q.y+'px) scale(.9)';c.style.opacity=0;return}
+    var q=ranks[rk];c.style.zIndex=10-rk;c.style.transform='translateY('+q.y+'px) scale('+q.s+')';c.style.filter='brightness('+q.b+')';c.style.opacity=1;
+  });
+}
+function tap(i){
+  if(done.indexOf(i)>=0)return;done.push(i);
+  var next=items.map(function(_,j){return j}).filter(function(j){return done.indexOf(j)<0});
+  if(next[2]!==undefined&&!document.getElementById('c'+next[2]))mkcard(next[2]);
+  layout();
+  var r=document.getElementById('r'+i);r.classList.add('fresh');
+  setTimeout(function(){r.classList.remove('fresh');r.classList.add('settled')},3000);
+}
+function play(){
+  app.classList.remove('go');build();
+  // deck entrance: bottom card first
+  var cs=[].slice.call(deck.children);
+  cs.forEach(function(c,idx){var rk=2-idx;var q=ranks[rk];
+    c.style.transition='none';c.style.opacity=0;c.style.transform='translateY('+(q.y+16)+'px) scale('+q.s+')';});
+  void app.offsetWidth;
+  app.classList.add('go');
+  cs.forEach(function(c,idx){var rk=2-idx;var q=ranks[rk];
+    setTimeout(function(){c.style.transition='';c.style.opacity=1;c.style.transform='translateY('+q.y+'px) scale('+q.s+')'},350+idx*60);});
+}
+document.getElementById('replay').onclick=play;
+document.getElementById('theme').onclick=function(){
+  var d=document.documentElement,dark=getComputedStyle(d).getPropertyValue('--bg').trim()==='#000';
+  d.setAttribute('data-theme',dark?'light':'dark');
+};
+play();
+</script>
+</body>
+</html>
