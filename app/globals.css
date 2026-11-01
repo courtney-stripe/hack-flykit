@@ -1,9 +1,14 @@
 @import "./tokens.css";
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0}
+html,body{margin:0;overscroll-behavior-y:none}
 body{background:var(--bg);color:var(--ink);font:15px/1.4 Geist,system-ui,-apple-system,sans-serif;transition:background .2s,color .2s}
 .mono{font-family:'Geist Mono',ui-monospace,monospace}
 .app{max-width:440px;margin:0 auto;padding:12px 16px 96px;min-height:100dvh}
+.pull{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.pull.drag{transition:none}
+.ptr{position:fixed;z-index:15;top:0;left:0;right:0;height:calc(18px + env(safe-area-inset-top));display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;font:500 11px 'Geist Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);pointer-events:none;opacity:0;transition:opacity .2s}
+.ptr.show{opacity:1}
+.ptr.armed{color:var(--ink)}
 .btn:active{transform:scale(.98)}
 .btn{font:500 15px Geist,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 16px;cursor:pointer;transition:transform .08s;width:100%}
 .btn.p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
@@ -25,7 +30,7 @@ body{background:var(--bg);color:var(--ink);font:15px/1.4 Geist,system-ui,-apple-
 .go .stage{animation:flyto 3.2s .2s cubic-bezier(.45,.05,.3,1) forwards}
 .go .plane{opacity:1;transition:opacity .12s linear .2s}
 .go .ticket{animation:rise .35s .12s ease-out forwards}
-.go .row{animation:rise6 .25s ease-out forwards}
+.go .row{animation:rise6 .25s ease-out both}
 .go .empty{animation:snapup .62s cubic-bezier(.32,1.12,.55,1) .16s both}
 @keyframes fade{to{opacity:1}}
 @keyframes flyto{to{--fly:72}}
@@ -56,7 +61,7 @@ body{background:var(--bg);color:var(--ink);font:15px/1.4 Geist,system-ui,-apple-
 .legend span{display:inline-flex;align-items:center}.legend .dot{margin-right:6px}
 /* rows */
 .grp h4{margin:18px 0 4px;font:500 11px 'Geist Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;display:flex;justify-content:space-between}
-.row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:opacity .4s;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;font:inherit;color:inherit}
+.row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:opacity .4s;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;font:inherit;color:inherit;opacity:0}
 .row .t{flex:1;min-width:0}.row .t small{display:block;color:var(--muted);font:400 12px 'Geist Mono',monospace}
 .row .tt{font-weight:500}
 .cb{width:22px;height:22px;border-radius:7px;border:1.5px solid var(--dot);transition:background .4s,border-color .4s;position:relative;flex:none}
@@ -66,7 +71,7 @@ body{background:var(--bg);color:var(--ink);font:15px/1.4 Geist,system-ui,-apple-
 .row.settled{opacity:.5}.row.settled .cb{background:var(--dot);border-color:var(--dot)}
 .row.settled .dot{background:var(--dot)!important}
 /* empty */
-.empty{margin-top:18px;border:1px dashed var(--line2);border-radius:16px;padding:22px 18px;text-align:center}
+.empty{margin-top:18px;border:1px dashed var(--line2);border-radius:16px;padding:22px 18px;text-align:center;opacity:0}
 .empty h3{margin:0 0 6px;font-size:17px;letter-spacing:-.01em}.empty p{margin:0;color:var(--muted)}
 .empty .next{margin-top:14px;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 /* forms */

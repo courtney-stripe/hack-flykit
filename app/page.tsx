@@ -17,6 +17,61 @@ function until(ms: number) {
   return `${mm} min`;
 }
 
+function usePullRefresh(sheet: { current: HTMLDivElement | null }, label: { current: HTMLDivElement | null }) {
+  useEffect(() => {
+    let startY = 0, startX = 0, dy = 0, active = false, armed = false;
+    const shift = (y: number, drag: boolean, arm: boolean) => {
+      const node = sheet.current;
+      const hint = label.current;
+      if (node) {
+        node.style.transform = y ? `translateY(${y}px)` : '';
+        node.classList.toggle('drag', drag);
+      }
+      if (hint) {
+        hint.classList.toggle('show', drag);
+        hint.classList.toggle('armed', arm);
+        if (arm !== armed) hint.textContent = arm ? 'Release to refresh' : 'Pull to refresh';
+      }
+      armed = arm;
+    };
+    const start = (e: TouchEvent) => {
+      if (window.scrollY > 0 || e.touches.length !== 1) return;
+      const tgt = e.target as HTMLElement;
+      if (tgt.closest('input, textarea, select, .tabs')) return;
+      startY = e.touches[0].clientY;
+      startX = e.touches[0].clientX;
+      dy = 0;
+      active = true;
+    };
+    const move = (e: TouchEvent) => {
+      if (!active) return;
+      const y = e.touches[0].clientY - startY;
+      const x = e.touches[0].clientX - startX;
+      if (y < 8 || window.scrollY > 0) { dy = 0; shift(0, false, false); if (y < 8) return; active = false; return; }
+      if (Math.abs(x) > y) { active = false; dy = 0; shift(0, false, false); return; }
+      dy = y;
+      if (e.cancelable) e.preventDefault();
+      shift(Math.min(y * 0.45, 84), true, y > 96);
+    };
+    const end = () => {
+      if (!active) return;
+      active = false;
+      if (dy > 96) { location.reload(); return; }
+      shift(0, false, false);
+    };
+    window.addEventListener('touchstart', start, { passive: true });
+    window.addEventListener('touchmove', move, { passive: false });
+    window.addEventListener('touchend', end);
+    window.addEventListener('touchcancel', end);
+    return () => {
+      window.removeEventListener('touchstart', start);
+      window.removeEventListener('touchmove', move);
+      window.removeEventListener('touchend', end);
+      window.removeEventListener('touchcancel', end);
+    };
+  }, [sheet, label]);
+}
+
 export default function Page() {
   const [t, setT] = useState<Trip | null>(null);
   const [view, setView] = useState<View>('today');
@@ -28,6 +83,9 @@ export default function Page() {
   const [deckIn, setDeckIn] = useState(false);
   const [deckReady, setDeckReady] = useState(false);
   const undoTimer = useRef<any>(null);
+  const pullSheet = useRef<HTMLDivElement>(null);
+  const pullLabel = useRef<HTMLDivElement>(null);
+  usePullRefresh(pullSheet, pullLabel);
 
   useEffect(() => {
     setT(load()); setNow(Date.now());
@@ -81,10 +139,13 @@ export default function Page() {
 
   return (
     <div className={cls}>
-      {view === 'today' && <Today />}
-      {view === 'plan' && <Plan />}
-      {view === 'kit' && <Kit />}
-      {view === 'trip' && <TripForm />}
+      <div className="ptr" ref={pullLabel} aria-hidden="true">Pull to refresh</div>
+      <div className="pull" ref={pullSheet}>
+        {view === 'today' && Today()}
+        {view === 'plan' && Plan()}
+        {view === 'kit' && Kit()}
+        {view === 'trip' && <TripForm />}
+      </div>
 
       <button className={`undo ${undo ? 'show' : ''}`} onClick={() => { if (undo) setCheck(undo.id, false); setUndo(null); }}>Undo</button>
       <nav className="tabs"><div className="in">
@@ -197,12 +258,12 @@ export default function Page() {
     let body: React.ReactNode;
     if (events.length === 0) body = empty('No adjustment needed', 'This trip shifts you by under 2 hours, so there are no steps to follow.');
     else if (last && now > last.t + 6 * 36e5) body = empty('Welcome home', `${Object.keys(t!.checks).length} of ${events.length} steps checked off. Sleep well.`, <button className="btn" style={{ marginTop: 14 }} onClick={() => setView('trip')}>Plan another trip</button>);
-    else if (todayEv.length && pending.length) body = <><Deck list={pending} /><Legend /><div className="grp">{(['Morning', 'Afternoon', 'Evening', 'Night'] as const).map((g) => {
+    else if (todayEv.length && pending.length) body = <>{Deck({ list: pending })}{Legend()}<div className="grp">{(['Morning', 'Afternoon', 'Evening', 'Night'] as const).map((g) => {
       const items = todayEv.filter((e) => { const h = hourIn(e.zone, e.t); return (g === 'Morning' ? h < 12 : g === 'Afternoon' ? h >= 12 && h < 17 : g === 'Evening' ? h >= 17 && h < 21 : h >= 21); });
-      return items.length ? <div key={g}><h4><span>{g}</span><span>{zc(zoneNow).city}</span></h4><Rows list={items} /></div> : null;
+      return items.length ? <div key={g}><h4><span>{g}</span><span>{zc(zoneNow).city}</span></h4>{Rows({ list: items })}</div> : null;
     })}</div></>;
-    else if (todayEv.length) body = <>{empty("That's everything for today", nextEv ? 'Nice work. Here is what is next.' : 'All steps are done.', nextBox)}<div className="grp"><h4><span>Today</span></h4><Rows list={todayEv} /></div></>;
-    else if (nextEv && now < events[0].t) body = <>{empty(`Starts in ${until(events[0].t - now)}`, 'Your first step is coming up.')}<Deck list={upcoming} interactive={false} /><Legend /></>;
+    else if (todayEv.length) body = <>{empty("That's everything for today", nextEv ? 'Nice work. Here is what is next.' : 'All steps are done.', nextBox)}<div className="grp"><h4><span>Today</span></h4>{Rows({ list: todayEv })}</div></>;
+    else if (nextEv && now < events[0].t) body = <>{empty(`Starts in ${until(events[0].t - now)}`, 'Your first step is coming up.')}{Deck({ list: upcoming, interactive: false })}{Legend()}</>;
     else body = empty("You're adjusted", 'Nothing scheduled today. Return prep picks up later.', nextBox);
     return <div key="today">{Hero()}{body}<p className="note">General wellness reminders, not medical advice. Check supplements with your clinician if you take prescription medication.</p></div>;
   }
@@ -222,7 +283,7 @@ export default function Page() {
               return (
                 <div className="grp" key={g.key}>
                   <h4><span>{g.name} · {zc(g.zone).city} · {fmtD(g.zone, g.list[0].t)}{isToday ? ' · TODAY' : ''}</span><span>{done}/{g.list.length}</span></h4>
-                  <Rows list={g.list} />
+                  {Rows({ list: g.list })}
                 </div>
               );
             })}
